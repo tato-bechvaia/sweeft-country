@@ -19,6 +19,8 @@ function App() {
     }, [navigate]);
 
     const autoSetLocation = useCallback(() => {
+        if(selectedCountry) return;
+
         navigator.geolocation.getCurrentPosition(async (position) => {
             let lat = position.coords.latitude;
             let long = position.coords.longitude;
@@ -29,7 +31,7 @@ function App() {
                 setError(e.message);
             }
         });
-    }, [handleCountrySelect]);
+    }, [handleCountrySelect, selectedCountry]);
     
     useEffect(() => {
         async function fetchCountries() {

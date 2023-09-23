@@ -7,7 +7,7 @@ function SelectedCountry(props) {
     const country = props.country;
     const onParamChange = props.onParamChange;
     const countryCurrency = country?.currencies[Object.keys(country.currencies)];
-
+    
     useEffect(() => {
         if(params.cca2) {
             onParamChange(params.cca2);
