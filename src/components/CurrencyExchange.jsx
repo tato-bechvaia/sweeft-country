@@ -1,43 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { CountriesService } from '../api/CountriesService';
+import { CurrencyService } from '../api/CurrencyService';
 
-function CurrecyExchage(props){
-
-    console.log(props.country);
+function CurrencyExchange(props){
 
     const fromCountryCurrencySign = Object.keys(props.country.currencies)[0];
 
-    console.log(fromCountryCurrencySign);
-
-    const [toCountry, setToCountry] = useState('');
     const [amount, setAmount] = useState(0);
     const [k, setK] =  useState(1);
     const [toCountryCurrencySign, setToCountryCurrencySign] = useState();
-    
-    console.log(+amount)
-    console.log(toCountry);
+    const [error, setError] = useState('');
 
-    const getK = async function() {
-        const response = await fetch(`https://api.exchangerate.host/convert?from=${fromCountryCurrencySign}&to=${toCountryCurrencySign}`);
-        const data = await response.json();
-        setK(data.result);
-    }
+    useEffect(() => {
+        const getK = async function() {
+            try {
+                setK(await CurrencyService.getExchangeRate(fromCountryCurrencySign, toCountryCurrencySign));
+            } catch (e) {
+                setError(e.message);
+            }
+        }
+        getK();
+    }, [fromCountryCurrencySign, toCountryCurrencySign]);
     
-    const getToCountryCurrencySign = async function(country) {
-        const response = await fetch(`https://restcountries.com/v3.1/name/${country}`);
-        const data = await response.json();
-        setToCountryCurrencySign(Object.keys(data[0].currencies)[0]);
+    const getToCountryCurrencySign = async function(cca2) {
+        const country = await CountriesService.fetchCountryByCca2(cca2);
+        setToCountryCurrencySign(Object.keys(country.currencies)[0]);
     }
-
-    console.log(toCountryCurrencySign);
-    getK();
 
     return (
         <div className="currency-exchange">
             <h1>Currency Exchange</h1>
-            <select onChange={(e) => {
-                    setToCountry(e.target.value);
-                    getToCountryCurrencySign(e.target.value);
-                }}>
+            <select onChange={(e) => getToCountryCurrencySign(e.target.value)}>
                 <option value="">Select a country</option>
                 {props.countries
                     .sort((a, b) => a.name.common.localeCompare(b.name.common))
@@ -45,14 +38,14 @@ function CurrecyExchage(props){
                         <option
                             key={index}
                             className="dropdown-menu"
-                            value={country.name.common}
+                            value={country.cca2}
                             href={`#${country.name.common}`}
                         >
                             {country.name.common}
                         </option>
                     ))}
             </select>
-            <form>
+            {error ? error : <form>
                 <label>
                     {fromCountryCurrencySign}:
                     <input onChange={(e) => setAmount(e.target.value)} value={amount} type="number" name="name" />
@@ -62,9 +55,9 @@ function CurrecyExchage(props){
                     {toCountryCurrencySign}:
                     <div>{Number(amount * k).toFixed(2)}</div>
                 </label>
-            </form>
+            </form>}
         </div>
     )
 }
 
-export default CurrecyExchage;
+export default CurrencyExchange;

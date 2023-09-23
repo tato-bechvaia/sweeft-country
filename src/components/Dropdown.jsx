@@ -1,18 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 
 function Dropdown(props) {
-    const [currentCountry, setCurrentCountry] = useState("");
-    console.log(currentCountry);
-        
     const handleSelectChange = (e) => {
         const selectedCountryName = e.target.value;
-        setCurrentCountry(selectedCountryName);
         props.onSelect(selectedCountryName);
     };
 
     return (
         <div>
-            <select onChange={handleSelectChange}>
+            <select onChange={handleSelectChange} value={props.country?.cca2}>
                 <option value="">Select a country</option>
                 {props.countries
                     .sort((a, b) => a.name.common.localeCompare(b.name.common))
@@ -20,7 +16,7 @@ function Dropdown(props) {
                         <option
                             key={index}
                             className="dropdown-menu"
-                            value={country.name.cca2}
+                            value={country.cca2}
                         >
                             {country.name.common}
                         </option>

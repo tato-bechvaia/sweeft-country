@@ -1,69 +1,78 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
+
 import Dropdown from "./components/Dropdown";
 import SelectedCountry from "./components/SelectedCountry";
-import CurrencyExchange from "./components/CurrencyExchange";
-import Airports from "./components/Airports";
-import { COUNTRIES_API, COUNTRY_API } from "./config";
-import { Link, Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import Airports from './components/Airports';
+import CurrencyExchange from './components/CurrencyExchange';
+import { CountriesService } from './api/CountriesService';
+import { LocationService } from './api/LocationService';
 
 function App() {
     const [countries, setCountries] = useState([]);
+    const [error, setError] = useState('');
     const [selectedCountry, setSelectedCountry] = useState(null);
     const navigate = useNavigate();
-    const params = useSearchParams();
+
+    const handleCountrySelect = useCallback(async (cca2) => {
+        navigate(`/${cca2}`);
+    }, [navigate]);
+
+    const autoSetLocation = useCallback(() => {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            let lat = position.coords.latitude;
+            let long = position.coords.longitude;
+            try {
+                const cca2 = await LocationService.getCurrLocationCountryCca2(lat, long);
+                handleCountrySelect(cca2);
+            } catch (e) {
+                setError(e.message);
+            }
+        });
+    }, [handleCountrySelect]);
     
     useEffect(() => {
         async function fetchCountries() {
             try {
-                const response = await fetch(COUNTRIES_API);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch countries data");
-                }
-                const data = await response.json();
-                setCountries(data);
+                setCountries(await CountriesService.fetchAllCountries());
+                autoSetLocation();
+                setError('');
             } catch (error) {
-                console.error(error);
+                navigate('/');
+                setError(error.message);
             }
         }
         fetchCountries();
-    }, []);
+    }, [navigate, autoSetLocation]);
 
-    const handleCountrySelect = useCallback(async (countryName) => {
+    const handleParamChange = useCallback(async (cca2) => {
+        if (cca2 === selectedCountry?.cca2) return;
         try {
-            const response = await fetch(`${COUNTRY_API}${countryName}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch country data");
-            }
-            const countryData = await response.json();
-            setSelectedCountry(countryData[0]);
-            navigate(countryData[0].cca2);
+            setSelectedCountry(await CountriesService.fetchCountryByCca2(cca2));
+            setError('');
         } catch (error) {
-            console.error(error);
+            navigate('/');
+            setError(error.message);
         }
-    }, [navigate]);
-
-    useEffect(() => {
-        if(params.cca2) handleCountrySelect(params.cca2);
-        console.log(params);
-    }, [handleCountrySelect, params.cca2]);
-    
-    if(selectedCountry) console.log(selectedCountry.currencies[Object.keys(selectedCountry.currencies)]);
-    
-    // let activeComponent = <CurrencyExchange country={selectedCountry} countries={countries} />;
+    }, [navigate, selectedCountry?.cca2]);
 
     return (
         <div className="app">
             <h1>Countries App</h1>
-            <Dropdown countries={countries} onSelect={handleCountrySelect} />
+            <Dropdown countries={countries} country={selectedCountry} onSelect={handleCountrySelect} />
             <Routes>
-                <Route element={<SelectedCountry countries={countries} country={selectedCountry} />} path={`:cca2`}>
-
+                <Route 
+                    element={
+                        <SelectedCountry
+                            country={selectedCountry}
+                            onParamChange={handleParamChange} />
+                    }
+                    path={`/:cca2`}>
+                    <Route path="airports" element={<Airports country={selectedCountry} />}></Route>
+                    <Route path="" element={<CurrencyExchange country={selectedCountry} countries={countries} />}></Route>
                 </Route>
-                    
             </Routes>
-                
-            
-
+            {error && <p className="error">{error}</p>}
         </div>
     );
 };
