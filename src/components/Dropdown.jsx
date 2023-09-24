@@ -5,9 +5,9 @@ function Dropdown(props) {
         const selectedCountryName = e.target.value;
         props.onSelect(selectedCountryName);
     };
-
+    
     return (
-        <div>
+        <div className="select-dropdown">
             <select onChange={handleSelectChange} value={props.country?.cca2}>
                 <option value="">Select a country</option>
                 {props.countries

@@ -1,14 +1,14 @@
 import { AIRPORT_API_KEY } from "../config";
 
 class AirportsServiceImpl {
-    cache = {}; // {GE: []}
+    cache = {};
 
     async getAirports(cca2, name = '') {
         const cacheKey = cca2 + '_' + name;
         if(this.cache[cacheKey]) {
             return this.cache[cacheKey];
         }
-                
+        
         const response = await fetch(`https://api.api-ninjas.com/v1/airports?country=${cca2}&name=${name}`, {
             method: 'GET',
             headers: {

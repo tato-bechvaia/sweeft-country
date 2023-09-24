@@ -17,7 +17,7 @@ function App() {
     const handleCountrySelect = useCallback(async (cca2) => {
         navigate(`/${cca2}`);
     }, [navigate]);
-
+        
     const autoSetLocation = useCallback(() => {
         if(selectedCountry) return;
 

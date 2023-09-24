@@ -2,7 +2,7 @@ import { COUNTRIES_API, COUNTRY_API } from "../config";
 
 class CountriesServiceImpl {
     cache = {};
-
+    
     async fetchAllCountries() {
         const response = await fetch(COUNTRIES_API);
         if (!response.ok) {
@@ -11,7 +11,7 @@ class CountriesServiceImpl {
         const data = await response.json();
         return data;
     }
-
+    
     async fetchCountryByCca2(cca2) {
         if (this.cache[cca2]) {
             return this.cache[cca2];

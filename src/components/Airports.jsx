@@ -3,8 +3,6 @@ import { AirportsService } from "../api/AirportsService";
 
 function Airports(props) {
     const country = props.country;
-    console.log(country);
-
     const [countryAirports, setCountryAirports] = useState([]);
     const [name, setName] = useState('');
     const [error, setError] = useState();
@@ -26,18 +24,16 @@ function Airports(props) {
     }, [country.cca2, name]);
 
     return(
-        <div>
+        <div className="airports">
+            <h1>Airports</h1>
             <input value={name} onChange={(e) => setName(e.target.value)}></input>
 
             {error ? error : 
             <ul className="airports-list">
-                {countryAirports.map(airport => <li key={airport.iata} >{airport.iata} - {airport.name}</li>)}
+                {countryAirports.map(airport => <li key={airport.iata} ><strong>{airport.iata}</strong> - {airport.name}</li>)}
             </ul>}
-            
         </div>
     );
 };
 
-
 export default Airports;
-
