@@ -46,7 +46,6 @@ function SelectedCountry(props) {
                                 </div>
                                 <div className="country-data_item">
                                     <div className="country-capital">{country.capital}</div>
-                                    {/* <div className="country-currency">{countryCurrency?.name ?? "N/A"} { `${countryCurrency?.symbol}`}</div> */}
                                     <div className="country-currency">
                                         {countryCurrency?.name} {countryCurrency?.symbol ? `(${countryCurrency?.symbol})` : "N/A"}
                                     </div>
