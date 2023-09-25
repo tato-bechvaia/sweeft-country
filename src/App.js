@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-
 import Dropdown from "./components/Dropdown";
 import SelectedCountry from "./components/SelectedCountry";
 import Airports from './components/Airports';
@@ -18,8 +17,8 @@ function App() {
         navigate(`/${cca2}`);
     }, [navigate]);
         
-    const autoSetLocation = useCallback(() => {
-        if(selectedCountry) return;
+    useEffect(() => {
+        if (selectedCountry || !countries.length) return;
 
         navigator.geolocation.getCurrentPosition(async (position) => {
             let lat = position.coords.latitude;
@@ -31,21 +30,25 @@ function App() {
                 setError(e.message);
             }
         });
-    }, [handleCountrySelect, selectedCountry]);
+    }, [handleCountrySelect, countries, selectedCountry]);
+    
+    useEffect(() => {
+        if (error) {
+            navigate('/');
+        }
+    }, [error, navigate]);
     
     useEffect(() => {
         async function fetchCountries() {
             try {
                 setCountries(await CountriesService.fetchAllCountries());
-                autoSetLocation();
                 setError('');
             } catch (error) {
-                navigate('/');
                 setError(error.message);
             }
         }
         fetchCountries();
-    }, [navigate, autoSetLocation]);
+    }, []);
 
     const handleParamChange = useCallback(async (cca2) => {
         if (cca2 === selectedCountry?.cca2) return;
@@ -53,10 +56,9 @@ function App() {
             setSelectedCountry(await CountriesService.fetchCountryByCca2(cca2));
             setError('');
         } catch (error) {
-            navigate('/');
             setError(error.message);
         }
-    }, [navigate, selectedCountry?.cca2]);
+    }, [selectedCountry?.cca2]);
 
     return (
         <div className="app">

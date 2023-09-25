@@ -6,7 +6,7 @@ function Airports(props) {
     const [countryAirports, setCountryAirports] = useState([]);
     const [name, setName] = useState('');
     const [error, setError] = useState();
-
+    
     useEffect(() =>  {
         async function fetchAirportData() {
             try {

@@ -28,7 +28,7 @@ function SelectedCountry(props) {
             onParamChange(params.cca2);
         }
     }, [onParamChange, params.cca2]);
-
+        
     return (
         <div className="selected-country-info">
             {country && (
@@ -46,7 +46,7 @@ function SelectedCountry(props) {
                                 </div>
                                 <div className="country-data_item">
                                     <div className="country-capital">{country.capital}</div>
-                                    <div className="country-currency">{countryCurrency?.name} ({countryCurrency['symbol']??''})</div>
+                                    <div className="country-currency">{countryCurrency?.name ?? "N/A"} { countryCurrency?.symbol}</div>
                                     <div className="country-region">{country.name?.common === 'Georgia' ? 'Europe' : country.region}</div>
                                 </div>
                             </div>
