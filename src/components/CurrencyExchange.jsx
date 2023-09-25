@@ -20,7 +20,7 @@ function CurrencyExchange(props){
         }
         getK();
     }, [fromCountryCurrencySign, toCountryCurrencySign]);
-    
+        
     const getToCountryCurrencySign = async function(cca2) {
         const country = await CountriesService.fetchCountryByCca2(cca2);
         setToCountryCurrencySign(Object.keys(country.currencies)[0]);
@@ -48,12 +48,11 @@ function CurrencyExchange(props){
 
                 <div className="labels">
                     <label>
-                        {fromCountryCurrencySign}:
-                        <input className="cash-input" onChange={(e) => setAmount(e.target.value)} value={amount} type="number" name="name" />
+                        {fromCountryCurrencySign}:<input className="cash-input" onChange={(e) => setAmount(e.target.value)} value={amount} type="number" name="name" />
                     </label>
                     <div className="label-equals">=</div>
                     <label>
-                        <div>{toCountryCurrencySign || fromCountryCurrencySign}:{Number(amount * k).toFixed(2)}</div>
+                        <div>{toCountryCurrencySign || fromCountryCurrencySign}: {Number(amount * k).toFixed(2)}</div>
                     </label>
                 </div>
             </form>}

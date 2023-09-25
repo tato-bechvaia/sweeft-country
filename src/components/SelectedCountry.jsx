@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {NavLink, Outlet, useParams } from "react-router-dom";
+import { CountriesService } from "../api/CountriesService";
 import  './../App.css'
 
 function SelectedCountry(props) {
@@ -7,6 +8,20 @@ function SelectedCountry(props) {
     const country = props.country;
     const onParamChange = props.onParamChange;
     const countryCurrency = country?.currencies[Object.keys(country.currencies)];
+    const [borders, setBorders] = useState([]);
+    
+    useEffect(() =>  {
+        const getBorders = async function() {
+            const arr = [];
+            for(let i = 0; i < props.country?.borders?.length; i++) {
+                const currCountry = await CountriesService.fetchCountryByCca3(props.country.borders[i]);
+                const countryName = currCountry?.name.common;
+                arr[i] = countryName;
+            }
+            setBorders(arr);
+        }
+        getBorders();
+    }, [props.country?.borders]);
 
     useEffect(() => {
         if(params.cca2) {
@@ -31,7 +46,7 @@ function SelectedCountry(props) {
                                 </div>
                                 <div className="country-data_item">
                                     <div className="country-capital">{country.capital}</div>
-                                    <div className="country-currency">{countryCurrency['name']} ({countryCurrency['symbol']})</div>
+                                    <div className="country-currency">{countryCurrency?.name} ({countryCurrency['symbol']??''})</div>
                                     <div className="country-region">{country.name?.common === 'Georgia' ? 'Europe' : country.region}</div>
                                 </div>
                             </div>
@@ -44,7 +59,7 @@ function SelectedCountry(props) {
                                 <div className="country-data_item">
                                     <div className="country-continent">{country.name?.common === 'Georgia' ? 'Europe' : country.continents[0]}</div>
                                     <div className="country-population">{country.population.toLocaleString()}</div>
-                                    <div className="country-borders">{country.borders?.join(", ")}</div>
+                                    <div className="country-borders">{borders?.join(", ")}</div>
                                 </div>
                             </div>
                         </div>

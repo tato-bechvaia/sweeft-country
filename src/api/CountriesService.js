@@ -1,4 +1,4 @@
-import { COUNTRIES_API, COUNTRY_API } from "../config";
+import { COUNTRIES_API, COUNTRY_API, COUNTRY_ALPHA_API } from "../config";
 
 class CountriesServiceImpl {
     cache = {};
@@ -10,6 +10,22 @@ class CountriesServiceImpl {
         }
         const data = await response.json();
         return data;
+    }
+
+    // get exact country from cca3
+    
+    async fetchCountryByCca3(cca3) {
+        if(this.cache[cca3]) {
+            return this.cache[cca3];
+        }
+        const response = await fetch(`${COUNTRY_ALPHA_API}${cca3}`);
+        if (!response.ok) {
+            throw new Error("Failed to fetch country data");
+        }
+        const data = await response.json();
+        const country = data[0];
+        this.cache[cca3] = country;
+        return country;
     }
     
     async fetchCountryByCca2(cca2) {
