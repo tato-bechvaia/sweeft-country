@@ -30,7 +30,7 @@ class CountriesServiceImpl {
         this.cache[cca3] = country;
         return country;
     }
-    
+        
     async fetchCountryByCca2(cca2) {
         if (this.cache2[cca2]) {
             return this.cache2[cca2];

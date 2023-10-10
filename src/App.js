@@ -16,7 +16,7 @@ function App() {
     const handleCountrySelect = useCallback(async (cca2) => {
         navigate(`/${cca2}`);
     }, [navigate]);
-        
+    
     useEffect(() => {
         if (selectedCountry || !countries.length) return;
 
@@ -31,7 +31,7 @@ function App() {
             }
         });
     }, [handleCountrySelect, countries, selectedCountry]);
-    
+        
     useEffect(() => {
         if (error) {
             navigate('/');
